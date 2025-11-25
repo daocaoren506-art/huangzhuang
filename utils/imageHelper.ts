@@ -17,13 +17,15 @@ export const fileToBase64 = (file: File): Promise<string> => {
 
 export const urlToBase64 = async (url: string): Promise<string> => {
   try {
+    // Attempt to fetch with CORS mode
     const response = await fetch(url, { mode: 'cors' });
-    if (!response.ok) throw new Error('Network response was not ok');
+    if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
     const blob = await response.blob();
     return await fileToBase64(new File([blob], "image.png", { type: blob.type }));
   } catch (error) {
     console.error("CORS or Network Error converting URL to Base64:", error);
-    throw new Error("无法加载此图片（可能是跨域限制），请尝试下载后上传。");
+    // Provide a more user-friendly error message
+    throw new Error("无法加载此图片（可能是因为跨域限制）。如果是预设图片，请尝试下载后手动上传，或者检查网络连接。");
   }
 };
 
